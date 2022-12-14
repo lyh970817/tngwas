@@ -1,0 +1,15 @@
+# Specify path to genotype file folder
+gen=/users/k1764630/test/TNG-GWAS-Pipeline/gen
+# Specify path to phenotype file 
+phe=/users/k1764630/test/TNG-GWAS-Pipeline/phe/phe
+# Specify path to covariates file
+cov=/users/k1764630/test/TNG-GWAS-Pipeline/phe/cov
+# Specify path to gwas output folder
+out=/users/k1764630/test/TNG-GWAS-Pipeline/out
+
+# Specify path to association template folder
+assoc=/users/k1764630/test/TNG-GWAS-Pipeline/assoc/regenie_split
+# Specify path to utility scripts
+preprocess=/users/k1764630/test/TNG-GWAS-Pipeline/preprocess/regenie_split
+# Specify path to log folder
+log=/users/k1764630/test/TNG-GWAS-Pipeline/log
