@@ -1,0 +1,58 @@
+#!/bin/bash
+
+function plink2-qt-run() {
+
+	cat <<'EOF' >$tmp/plink2-qt-run
+#!/bin/bash
+# set -e
+
+gen_path_array_id=$(eval echo $gen_path)
+gen_out_path_array_id=$(eval echo $gen_out_path)
+
+plink2 \
+--pfile $gen_path_array_id \
+--require-info "INFO >= $info \
+--glm linear cols=+a1freq \
+--pheno $phe  \
+--covar $cov \
+--out $gen_out_path_array_id
+EOF
+
+	jid_last=$(sbatch_gwas --dependency=afterok:$jid1 --cpus-per-task=$cpus_openmp --array=1-22 $tmp/plink2-qt-run)
+
+}
+
+function plink2-qt_post_gwas() {
+
+	cat <<'EOF' >$tmp/plink2-qt_post_gwas
+#!/bin/bash
+set -e
+
+suffix=.glm.linear
+maf_col='$7'
+
+sumstat_all=$(echo $gen_base_name_jobtem | sed 's/${SLURM_ARRAY_TASK_ID}/ALL/')
+
+for p in $phes; do
+
+      head -1 $out/$(echo $gen_base_names|cut -d' ' -f1)."$p"$suffix > $out/"$sumstat_all"."$p"$suffix
+
+      # Does parallel really speed it up? Guess file reading speed is important
+      # perhaps fread
+	  srun -N1 --ntasks=1 --exact \
+      parallel \
+            "sed '1d' $out/{}."$p"$suffix|
+            awk -v maf=$maf "$maf_col >= maf" && rm $out/{}."$p"$suffix" \
+            ::: $gen_base_names >> $out/"$sumstat_all"."$p"$suffix
+
+done
+EOF
+
+	jid_post_gwas=$(sbatch_gwas --dependency=afterok:$jid_last --ntasks=$n_phes --cpus-per-task=22 $tmp/plink2-qt_post_gwas)
+}
+
+function plink2-qt() {
+
+	plink2-qt-run && plink2-qt_post_gwas
+
+}

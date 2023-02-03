@@ -1,0 +1,122 @@
+#!/bin/bash
+
+function regenie-bt-split() {
+
+	cat <<'EOF' >$tmp/regenie-bt-split
+#!/bin/bash
+
+# Create tmp directory
+tmp_path="$out/.tmp/$gtp_base_name"
+mkdir -p $tmp_path
+
+base_command="regenie \
+ --step 1 \
+ --bed $gtp_path \
+ --covarFile $cov \
+ --phenoFile $phe \
+ --catCovarList $cat_vars \
+ --bsize 1000 \
+ --bt \
+ --lowmem \
+ --lowmem-prefix $tmp_path \
+ --threads $cpus_openmp"
+
+srun -N1 --ntasks=1 --exact \
+     --output "$log"/"$gtp_base_name"_split.out \
+     $base_command \
+     --force-step1 \
+     --out $gtp_out_path \
+     --split-l0 ${gtp_out_path}_split,$n_split
+
+for job in $(seq 1 $n_split); do
+	  srun -N1 --ntasks=1 --exact \
+           --output "$log"/"$gtp_base_name"_l0_"$job".out \
+           $base_command --out $gtp_out_path --run-l0 ${gtp_out_path}_split.master,$job &
+done
+
+wait
+
+srun -N1 --ntasks=1 --exact --output "$log"/"$gtp_base_name"_l1.log \
+     $base_command \
+	 --out $gtp_out_path \
+	 --run-l1 ${gtp_out_path}_split.master
+EOF
+
+	jid1=$(sbatch_gwas --ntasks=$n_split --cpus-per-task=$cpus_openmp $tmp/regenie-bt-split)
+
+}
+
+function regenie-bt-l2() {
+
+	cat <<'EOF' >$tmp/regenie-bt-l2
+#!/bin/bash
+# set -e
+
+gen_path_array_id=$(eval echo $gen_path)
+gen_out_path_array_id=$(eval echo $gen_out_path)
+
+# Set number of threads to use
+threads=$((SLURM_CPUS_PER_TASK))
+
+regenie \
+	--step 2 \
+	--pgen $gen_path_array_id \
+	--covarFile $cov \
+	--phenoFile $phe \
+    --catCovarList "$cat_vars" \
+	--bsize 400 \
+	--bt \
+	--firth \
+    --approx \
+	--firth-se \
+    --minINFO $info \
+	--pred ${gtp_out_path}_pred.list \
+	--out $gen_out_path_array_id \
+    --threads $cpus_openmp
+EOF
+
+	jid_last=$(sbatch_gwas --dependency=afterok:$jid1 --cpus-per-task=$cpus_openmp --array=1-22 $tmp/regenie-bt-l2)
+
+}
+
+function regenie_post_gwas() {
+
+	cat <<'EOF' >$tmp/regenie_post_gwas
+#!/bin/bash
+set -e
+
+suffix=.regenie
+maf_col='$6'
+logp_col='$13'
+
+sumstat_all=$(echo $gen_base_name_jobtem | sed 's/${SLURM_ARRAY_TASK_ID}/ALL/')
+
+for p in $phes; do
+
+      # Add header and change LOGP to P (change value later)
+      head -1 $out/$(echo $gen_base_names|cut -d' ' -f1)_"$p"$suffix|
+      sed '1s/LOGP/P' \
+        > $out/"$sumstat_all"_"$p"$suffix
+
+	function merge_sumstats() {
+		sed '1d' $out/"$1"_"$p"$suffix |
+			awk -v maf=$maf "$maf_col >= maf{$logp_col=10^(-$logp_col);print}" \
+				>>$out/"$sumstat_all"_"$p"$suffix &&
+			rm $out/"$1"_"$p"$suffix
+	}
+
+	# Does parallel really speed it up? Guess file reading speed is important
+	# perhaps fread
+	srun -N1 --ntasks=1 --exact parallel merge_sumstats {} ::: $gen_base_names
+
+done
+EOF
+
+	jid_post_gwas=$(sbatch_gwas --dependency=afterok:$jid_last --ntasks=$n_phes --cpus-per-task=22 $tmp/regenie_post_gwas)
+}
+
+function regenie-bt() {
+
+	regenie-bt-split && regenie-bt-l2 && regenie_post_gwas
+
+}
