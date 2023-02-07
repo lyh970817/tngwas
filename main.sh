@@ -96,10 +96,10 @@ function set_env() {
 	done
 
 	# Number of imputed genetic files should be 22
-	 if [ ${#gen_base_names_arr[@]} != 22 ]; then
-	 	error "${#gen_base_names_arr[@]} chromosome files found. Should be 22"
-	 fi
-	
+	if [ ${#gen_base_names_arr[@]} != 22 ]; then
+		error "${#gen_base_names_arr[@]} chromosome files found. Should be 22"
+	fi
+
 	# Format gen file name for job array submission template
 	gen_base_name_jobtem_arr=($(
 		for n in ${gen_base_names_arr[@]}; do
@@ -133,7 +133,7 @@ function set_env() {
 }
 
 function run_model() {
-    . "$MODEL"/"$(basename "$MODEL")".sbatch
+	. "$MODEL"/"$(basename "$MODEL")".sbatch
 }
 
 function error() {
