@@ -2,7 +2,25 @@
 set -a
 
 function help() {
-	echo "help"
+	cat <<EOF
+Usage: $(
+		basename "${BASH_SOURCE[0]}"
+	) [-h] [-i] [PROJECT-NAME] -c [CONFIG-FILE] -m [DIRECTORY] [-f] 
+
+tngwas is a simple and extensible pipeline for GWAS analyses. Check the
+latest updates and usage guide at https://github.com/lyh970817/tngwas/.
+
+Available options:
+
+-h, --help      Print this help and exit
+-i, --init      Generate default project directory structure in the current 
+                directory, or in a specified project directory in the current 
+                directory
+-c, --config    Specify the config file
+-m, --model     Specify the directory containing a model template
+-f, --fresh     Clean the LOG and OUT directories specified in CONFIG-FILE.
+EOF
+	exit
 }
 
 function init() {
