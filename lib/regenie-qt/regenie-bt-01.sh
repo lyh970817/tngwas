@@ -7,7 +7,7 @@ base_command="regenie \
  --phenoFile $PHE \
  --catCovarList $CAT_VARS \
  --bsize 1000 \
- --bt \
+ --qt \
  --lowmem \
  --lowmem-prefix $TMP \
  --threads $CPUS_OPENMP"

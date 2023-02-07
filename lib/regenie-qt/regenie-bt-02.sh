@@ -14,10 +14,8 @@ regenie \
 	--phenoFile $PHE \
     --catCovarList "$CAT_VARS" \
 	--bsize 400 \
-	--bt \
-	--firth \
+	--qt \
     --approx \
-	--firth-se \
     --minINFO $INFO \
 	--pred ${GTP_OUT_PATH}_pred.list \
 	--out $gen_out_path_array_id \

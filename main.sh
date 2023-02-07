@@ -16,40 +16,42 @@ function init() {
 
 	cat <<EOF >$config_path
 # Specify path to imputed genetic data file folder
-gen="$path_prefix/gen"
+GEN="$path_prefix/gen"
 # Specify path to genotype data file folder
-gtp="$path_prefix/gtp"
+GTP="$path_prefix/gtp"
 # Specify path to phenotype file 
-phe="$path_prefix/phe/phe"
+PHE="$path_prefix/phe/phe"
 # Specify path to covariates file
-cov="$path_prefix/phe/cov"
+COV="$path_prefix/phe/cov"
 # Specify path to gwas output folder
-out="$path_prefix/out"
+OUT="$path_prefix/out"
 # Specify path to log folder
-log="$path_prefix/log"
+LOG="$path_prefix/log"
 # Specify path to tmp folder
-tmp="$path_prefix/.tmp"
+TMP="$path_prefix/.tmp"
+# Specify path to utils folder
+UTILS="$path_prefix/utils"
 # Specify directory to ldsc
-ldsc=""
+LDSC=""
 # Specify directory to ldsc snp list
-snp_list=""
+SNP_LIST=""
 # Specify directory to ldsc ld chr
-ld_chr=""
+LD_CHR=""
 # Specify categorical variables
-cat_vars="sex,batch"
+CAT_VARS="sex,batch"
 # Specify info filter
-info=0.3
+INFO=0.3
 # Specify maf filter
-maf=0.01
+MAF=0.01
 # Specify cluster partition name
-partition=cpu
+PARTITION=cpu
 # Specify number of cpus for openmp parallelisation
-cpus_openmp=15
+CPUS_OPENMP=15
 # Specify number of splits for regenie level 1 split
-n_split=8
+N_SPLIT=8
 EOF
 
-	. $config_path && mkdir -p $gen $gtp ${phe%/*} $out $log $tmp
+	. $config_path && mkdir -p $GEN $GTP ${PHE%/*} $OUT $LOG $TMP
 
 }
 
@@ -60,13 +62,13 @@ function set_env() {
 		echo "${base_names[@]}"
 	}
 
-	gtp_base_name_arr=($(getnames_nosuf $gtp/*))
+	gtp_base_name_arr=($(getnames_nosuf $GTP/*))
 
 	if [ ${#gtp_base_name_arr[@]} -ne 1 ]; then
 		error "There should be 1 genotype file."
 	fi
 
-	gen_base_names_arr=($(getnames_nosuf $gen/*))
+	gen_base_names_arr=($(getnames_nosuf $GEN/*))
 
 	# Each gen_base_name shoud have exactly one occurence of the pattern chr[0-9][0-9]*
 	for gn in $gen_base_names_arr; do
@@ -99,21 +101,21 @@ function set_env() {
 		error "File names should be the same except for chromosome number."
 	fi
 
-	gtp_base_name=${gtp_base_name_arr[0]} # First element of an array
-	gtp_path="$gtp/$gtp_base_name"
-	gtp_out_path="$out/$gtp_base_name"
+	GTP_BASE_NAME=${gtp_base_name_arr[0]} # First element of an array
+	GTP_PATH="$GTP/$GTP_BASE_NAME"
+	GTP_OUT_PATH="$OUT/$GTP_BASE_NAME"
 
-	gen_base_names=${gen_base_names_arr[@]}
-	gen_base_name_jobtem=${gen_base_name_jobtem_arr[0]} # First element of an array
-	gen_path="$gen/$gen_base_name_jobtem"
-	gen_out_path="$out/$gen_base_name_jobtem"
+	GEN_BASE_NAMES=${gen_base_names_arr[@]}
+	GEN_BASE_NAME_JOBTEM=${gen_base_name_jobtem_arr[0]} # First element of an array
+	GEN_PATH="$GEN/$GEN_BASE_NAME_JOBTEM"
+	GEN_OUT_PATH="$OUT/$GEN_BASE_NAME_JOBTEM"
 
-	phes="$(head -1 $phe | awk '{$1="";$2="";print}' | sed 's/^ *//')"
-	n_phes=$(($(head -1 $phe | awk '{print NF}') - 2))
+	PHES="$(head -1 $PHE | awk '{$1="";$2="";print}' | sed 's/^ *//')"
+	N_PHES=$(($(head -1 $PHE | awk '{print NF}') - 2))
 }
 
 function run_model() {
-    . "$model"/"$(basename "$model")".sbatch
+    . "$MODEL"/"$(basename "$MODEL")".sbatch
 }
 
 function error() {
@@ -142,13 +144,12 @@ function main() {
 			;;
 		--model | -m)
 			shift
-			model=$1
-			[ ! -d $model ] && error "$model is not a directory" 
-			shift
+			MODEL="${1-}"
+			[ ! -d $MODEL ] && error "$MODEL is not a directory"
 			;;
 		--fresh | -f)
-			find $log -type f -exec rm {} \;
-			find $out -type f -exec rm {} \;
+			find $LOG -type f -exec rm {} \;
+			find $OUT -type f -exec rm {} \;
 			shift
 			;;
 		*)
