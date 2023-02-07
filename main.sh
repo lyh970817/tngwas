@@ -157,7 +157,7 @@ function main() {
 		--config | -c)
 			shift
 			# Source config
-			config=$1 && [ -f $config ] && . "$config"
+			config="${1-}" && [ -f $config ] && . "$config"
 			shift
 			;;
 		--model | -m)
@@ -170,7 +170,7 @@ function main() {
 			find $OUT -type f -exec rm {} \;
 			shift
 			;;
-		*)
+		-?*)
 			error "$1 is not a recognized flag!"
 			;;
 		esac
