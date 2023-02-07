@@ -29,6 +29,12 @@ out="$path_prefix/out"
 log="$path_prefix/log"
 # Specify path to tmp folder
 tmp="$path_prefix/.tmp"
+# Specify directory to ldsc
+ldsc=""
+# Specify directory to ldsc snp list
+snp_list=""
+# Specify directory to ldsc ld chr
+ld_chr=""
 # Specify categorical variables
 cat_vars="sex,batch"
 # Specify info filter
@@ -70,10 +76,10 @@ function set_env() {
 	done
 
 	# Number of imputed genetic files should be 22
-	# if [ ${#gen_base_names_arr[@]} != 22 ]; then
-	# 	error "${#gen_base_names_arr[@]} chromosome files found. Should be 22"
-	# fi
-	#
+	 if [ ${#gen_base_names_arr[@]} != 22 ]; then
+	 	error "${#gen_base_names_arr[@]} chromosome files found. Should be 22"
+	 fi
+	
 	# Format gen file name for job array submission template
 	gen_base_name_jobtem_arr=($(
 		for n in ${gen_base_names_arr[@]}; do
@@ -104,28 +110,10 @@ function set_env() {
 
 	phes="$(head -1 $phe | awk '{$1="";$2="";print}' | sed 's/^ *//')"
 	n_phes=$(($(head -1 $phe | awk '{print NF}') - 2))
-
-	root=$(realpath $(dirname -- $0))
-
-	alias sbatch_gwas='sbatch --parsable -p "$partition" --output $log/%x_%a_%j.out'
 }
 
 function run_model() {
-	case $model in
-	regenie-bt)
-		jid1=$(sbatch_gwas --ntasks=$n_split --cpus-per-task=$cpus_openmp $root/lib/regenie-bt/regenie-bt-01.sh)
-		jid_last=$(sbatch_gwas --dependency=afterok:$jid1 --cpus-per-task=$cpus_openmp --array=1-22 $root/lib/regenie-bt/regenie-bt-02.sh)
-		jid_post_gwas=$(sbatch_gwas --dependency=afterok:$jid_last --ntasks=$n_phes --cpus-per-task=22 $root/lib/regenie-bt/regenie-bt-03.sh)
-		;;
-	regenie-qt)
-		jid1=$(sbatch_gwas --ntasks=$n_split --cpus-per-task=$cpus_openmp $root/lib/regenie-qt/regenie-qt-01.sh)
-		jid_last=$(sbatch_gwas --dependency=afterok:$jid1 --cpus-per-task=$cpus_openmp --array=1-22 $root/lib/regenie-qt/regenie-qt-02.sh)
-		jid_post_gwas=$(sbatch_gwas --dependency=afterok:$jid_last --ntasks=$n_phes --cpus-per-task=22 $root/lib/regenie-qt/regenie-qt-03.sh)
-		;;
-	*)
-		error 'Models should be one of "regenie-qt", "regenie-bt", "plink2-qt" or "plink-bt".'
-		;;
-	esac
+    . "$model"/"$(basename "$model")".sbatch
 }
 
 function error() {
@@ -155,8 +143,7 @@ function main() {
 		--model | -m)
 			shift
 			model=$1
-			# If a file, load model from file
-			[ ! -z $model -a -f $model ] && . $model && model=$(basename $model)
+			[ ! -d $model ] && error "$model is not a directory" 
 			shift
 			;;
 		--fresh | -f)
@@ -166,7 +153,6 @@ function main() {
 			;;
 		*)
 			error "$1 is not a recognized flag!"
-			exit 1
 			;;
 		esac
 	done
