@@ -20,8 +20,8 @@ for p in $PHES; do
 
 	$LDSC/ldsc.py \
 		--h2 $TMP/"$p"_munged.ldsc.sumstats.gz \
-		--ref-ld-chr $LD_CHR \
-		--w-ld-chr $LD_CHR \
+		--ref-ld-chr $LD_CHR/ \
+		--w-ld-chr $LD_CHR/ \
 		--out $OUT/$p$_h2.ldsc
     }
     export -f run_ldsc
