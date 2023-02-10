@@ -38,7 +38,7 @@ wait
 
 for p in $PHES; do
 	Rscript --vanilla $UTILS/plot.R \
-		$OUT/"$sumstat_all"_"$p"$suffix $OUT "CHROM" "GENPOS" "ID" "P" &
+		$OUT/"$sumstat_all"_"$p"$suffix "CHROM" "GENPOS" "ID" "P" &
 done
 
 wait
