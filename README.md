@@ -2,8 +2,9 @@
 
 This is a simple and extensible GWAS pipeline writtien in `bash` to be used
 with [Slurm Workload Manager](https://slurm.schedmd.com/overview.html).
-Currenly the pipeline has pipeline templates to run association analyses in `regenie`
-and `plink2` as well as heritabiltiy estimation in `ldsc`. 
+Currenly the pipeline has pipeline templates to run association analyses
+(including manhattan and QQ plots) in `regenie` and `plink2` as well as
+heritabiltiy estimation in `ldsc`. 
 
 The `lib/` directory contains default pipeline templates which are structured as
 directoris containing a `*.sbatch` job submission script. The pipeline templates
