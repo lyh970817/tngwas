@@ -164,6 +164,7 @@ function main() {
 			shift
 			MODEL="${1-}"
 			[ ! -d $MODEL ] && error "$MODEL is not a directory"
+			shift
 			;;
 		--fresh | -f)
 			find $LOG -type f -exec rm {} \;
