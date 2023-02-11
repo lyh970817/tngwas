@@ -1,11 +1,9 @@
 #!/bin/bash
 set -e
 
-export suffix=.regenie
 export maf_col='$6'
 export logp_col='$13'
 
-export sumstat_all=$(echo $GEN_BASE_NAME_JOBTEM | sed 's/${SLURM_ARRAY_TASK_ID}/ALL/')
 
 for p in $PHES; do
       export p
@@ -32,13 +30,6 @@ for p in $PHES; do
     find $OUT -name *.master -type f -exec rm {} \;
     find $OUT -name *.log -type f -exec mv {} $LOG \;
 
-done
-
-wait
-
-for p in $PHES; do
-	Rscript --vanilla $UTILS/plot.R \
-		$OUT/"$sumstat_all"_"$p"$suffix "CHROM" "GENPOS" "ID" "P" &
 done
 
 wait
