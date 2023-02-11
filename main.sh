@@ -65,6 +65,8 @@ MAF=0.01
 PARTITION=cpu
 # Specify number of cpus for openmp parallelisation
 CPUS_OPENMP=15
+# Specify number of cpus for openmp parallelisation
+MEM_PER_CPU=2048M
 # Specify number of splits for regenie level 1 split
 N_SPLIT=8
 EOF
