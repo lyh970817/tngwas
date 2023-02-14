@@ -28,7 +28,6 @@ for p in $PHES; do
     find $OUT -name *.loco -type f -exec rm {} \;
     find $OUT -name *.list -type f -exec rm {} \;
     find $OUT -name *.master -type f -exec rm {} \;
-    find $OUT -name *.log -type f -exec mv {} $LOG \;
 
 done
 
