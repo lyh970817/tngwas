@@ -16,7 +16,7 @@ jid_post_gwas=$(sbatch --parsable -p "$PARTITION" --output $LOG/%x_%a_%j.out \
 
 jid_plot=$(sbatch --parsable -p "$PARTITION" --output $LOG/%x_%a_%j.out \
 	--dependency=afterok:$jid_post_gwas \
-  --ntasks=$(( $N_PHES*2 )) --cpus-per-task=2 --mem-per-cpu=$MEM_PER_CPU "$MODEL"/regenie-qt-04.sh)
+	--ntasks=$(($N_PHES * 2)) --cpus-per-task=2 --mem-per-cpu=$MEM_PER_CPU "$MODEL"/regenie-qt-04.sh)
 
 jid_ldsc=$(sbatch --parsable -p "$PARTITION" --output $LOG/%x_%a_%j.out \
 	--dependency=afterok:$jid_post_gwas \

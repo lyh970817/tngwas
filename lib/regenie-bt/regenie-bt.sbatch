@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export suffix=.regenie
 export sumstat_all=$(echo $GEN_BASE_NAME_JOBTEM | sed 's/${SLURM_ARRAY_TASK_ID}/ALL/')
 
@@ -14,7 +16,7 @@ jid_post_gwas=$(sbatch --parsable -p "$PARTITION" --output $LOG/%x_%a_%j.out \
 
 jid_plot=$(sbatch --parsable -p "$PARTITION" --output $LOG/%x_%a_%j.out \
 	--dependency=afterok:$jid_post_gwas \
-  --ntasks=$(( $N_PHES*2 )) --cpus-per-task=2 --mem-per-cpu=$MEM_PER_CPU "$MODEL"/regenie-bt-04.sh)
+	--ntasks=$(($N_PHES * 2)) --cpus-per-task=2 --mem-per-cpu=$MEM_PER_CPU "$MODEL"/regenie-bt-04.sh)
 
 jid_ldsc=$(sbatch --parsable -p "$PARTITION" --output $LOG/%x_%a_%j.out \
 	--dependency=afterok:$jid_post_gwas \

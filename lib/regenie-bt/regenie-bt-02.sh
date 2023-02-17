@@ -12,13 +12,13 @@ regenie \
 	--pgen $gen_path_array_id \
 	--covarFile $COV \
 	--phenoFile $PHE \
-    --catCovarList "$CAT_VARS" \
+	--catCovarList "$CAT_VARS" \
 	--bsize 400 \
 	--bt \
 	--firth \
-    --approx \
+	--approx \
 	--firth-se \
-    --minINFO $INFO \
+	--minINFO $INFO \
 	--pred ${GTP_OUT_PATH}_pred.list \
 	--out $gen_out_path_array_id \
-    --threads $CPUS_OPENMP
+	--threads $CPUS_OPENMP
