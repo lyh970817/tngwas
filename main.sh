@@ -17,7 +17,7 @@ Available options:
                 directory, or in a specified project directory in the current 
                 directory
 -c, --config    Specify the config file
--m, --model     Specify the directory containing a model template
+-p, --pipe      Specify the directory containing a pipeline template
 -f, --fresh     Clean the LOG and OUT directories specified in CONFIG-FILE.
 EOF
 	exit
@@ -134,8 +134,8 @@ function set_env() {
 	N_PHES=$(($(head -1 $PHE | awk '{print NF}') - 2))
 }
 
-function run_model() {
-	. "$MODEL"/"$(basename "$MODEL")".sbatch
+function run_pipe() {
+	. "$PIPE"/"$(basename "$PIPE")".sbatch
 }
 
 function error() {
@@ -162,10 +162,10 @@ function main() {
 			config="${1-}" && [ -f $config ] && . "$config"
 			shift
 			;;
-		--model | -m)
+		--pipe | -m)
 			shift
-			MODEL="${1-}"
-			[ ! -d $MODEL ] && error "$MODEL is not a directory"
+			PIPE="${1-}"
+			[ ! -d $PIPE ] && error "$PIPE is not a directory"
 			shift
 			;;
 		--fresh | -f)
@@ -179,7 +179,7 @@ function main() {
 		esac
 	done
 
-	set_env && run_model
+	set_env && run_pipe
 }
 
 main "$@"
