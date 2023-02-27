@@ -121,6 +121,16 @@ function set_env() {
 		error "File names should be the same except for chromosome number."
 	fi
 
+	SUBDIR="$(basename $PHE)_$(basename $COV)"
+	OUT="$OUT/$SUBDIR"
+	LOG="$LOG/$SUBDIR"
+	mkdir -p $OUT $LOG
+
+	if [[ $FRESH -eq 1 ]]; then
+		find $LOG -type f -exec rm {} \;
+		find $OUT -type f -exec rm {} \;
+	fi
+
 	GTP_BASE_NAME=${gtp_base_name_arr[0]} # First element of an array
 	GTP_PATH="$GTP/$GTP_BASE_NAME"
 	GTP_OUT_PATH="$OUT/$GTP_BASE_NAME"
@@ -169,8 +179,7 @@ function main() {
 			shift
 			;;
 		--fresh | -f)
-			find $LOG -type f -exec rm {} \;
-			find $OUT -type f -exec rm {} \;
+			FRESH=1
 			shift
 			;;
 		-?*)
