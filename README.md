@@ -99,3 +99,4 @@ initiated with `--mem`. This is an issue with KCL CREATE.
   implementing a parallelised version?
   - This takes 10 minutes with `plink2` which is single-threaded. Can be made
     faster if repeatedly merging in pairs, which needes 12 tasks (also 12 CPUs).
+* Useful to have multiple phenotypes in a single run?
