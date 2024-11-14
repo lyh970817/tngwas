@@ -26,8 +26,8 @@ for ((i = 0; i < ${#traits[@]}; i++)); do
 				--out "$out_file"
 		}
 		export -f gencorr_ldsc
-		# srun -N1 --ntasks=1 --exact bash -exec 'gencorr_ldsc' &
-		bash -exec 'gencorr_ldsc'
+		srun -N1 --ntasks=1 --exact bash -exec 'gencorr_ldsc' &
+		# bash -exec 'gencorr_ldsc'
 	done
 done
 

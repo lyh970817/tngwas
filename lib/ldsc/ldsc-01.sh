@@ -25,8 +25,8 @@ for file in "$SUMSTATS"/*; do
 	}
 
 	export -f munge_ldsc
-	# srun -N1 --ntasks=1 --exact bash -exec 'munge_ldsc' &
-	bash -exec 'munge_ldsc'
+	srun -N1 --ntasks=1 --exact bash -exec 'munge_ldsc' &
+	# bash -exec 'munge_ldsc'
 done
 
 wait
