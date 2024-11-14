@@ -90,3 +90,12 @@ explanations of these variables will be added.
 
 `srun` is currently non-functional if jobs are submitted from non-login nodes,
 which disables some parallelization options.
+
+## Todos
+
+* Most of programmes prefer `bed` to `pgen`. Switch everything to bed for
+  consistency?
+* Is there ever a need to merge chromosomes? And if so is it worthwhile
+  implementing a parallelised version?
+  - This takes 10 minutes with `plink2` which is single-threaded. Can be made
+    faster if repeatedly merging in pairs, which needes 12 tasks (also 12 CPUs).
