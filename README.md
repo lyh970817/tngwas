@@ -88,12 +88,12 @@ explanations of these variables will be added.
 
 ## Known Issues
 
-`srun` is currently non-functional if jobs are submitted from non-login nodes,
-which disables some parallelization options.
+`srun` is not functional if jobs are submitted from an interactive session
+initiated with `--mem`. This is an issue with KCL CREATE.
 
 ## Todos
 
-* Most of programmes prefer `bed` to `pgen`. Switch everything to bed for
+* Most of programmes prefer `bed` to `pgen`. Switch everything to `bed` for
   consistency?
 * Is there ever a need to merge chromosomes? And if so is it worthwhile
   implementing a parallelised version?
