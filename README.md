@@ -43,27 +43,27 @@ To clear the file content in `LOG` and `OUT` before running the pipeline, use th
 
 There are two types of parallelization enabled by `SLURM`.
 
-1. **Multithreading**: In this type of parallelization, multiple CPUs on a
-   single node can be used, sharing memory. This is typically used for numeric
-   calculations within a program, such as matrix algebra. For instance, one
-   could request `regenie` to use 15 CPUs for association analyses on a
-   genotype file. This can be set in `config` with the `CPUS_OPENMP` variable.
-   Note that a program may not use all CPUs for every operation, as only some
-   operations can be parallelized.
+**Multithreading**: In this type of parallelization, multiple CPUs on a
+single node can be used, sharing memory. This is typically used for numeric
+calculations within a program, such as matrix algebra. For instance, one
+could request `regenie` to use 15 CPUs for association analyses on a
+genotype file. This can be set in `config` with the `CPUS_OPENMP` variable.
+Note that a program may not use all CPUs for every operation, as only some
+operations can be parallelized.
 
-2. **Distributed Parallelization**: This type allows the use of multiple nodes
-   concurrently, each running a different command, while each node can use
-   multithreading. This is enabled by the `--array` and `--ntasks` features in
-   `SLURM`. In practice, different parts of a node can act as separate nodes,
-   each running its own job. For instance, one can submit multiple jobs to use
-   `regenie` to run association analyses for each chromosome concurrently using
-   `--array`. Alternatively, one could split the calculation of genetic
-   relatedness matrices in `GCTA` into different parts, allowing different
-   nodes (or parts of a node) to calculate them simultaneously. This needs to
-   be configured for each program, with relevant options in `config` (e.g.,
-   `NPARTS_GCTA`). Since each calculation is conducted on different nodes with
-   unshared memory, the results are stored on the hard disk and need to be
-   combined afterward, adding some overhead to the computation time.
+**Distributed Parallelization**: This type allows the use of multiple nodes
+concurrently, each running a different command, while each node can use
+multithreading. This is enabled by the `--array` and `--ntasks` features in
+`SLURM`. In practice, different parts of a node can act as separate nodes,
+each running its own job. For instance, one can submit multiple jobs to use
+`regenie` to run association analyses for each chromosome concurrently using
+`--array`. Alternatively, one could split the calculation of genetic
+relatedness matrices in `GCTA` into different parts, allowing different
+nodes (or parts of a node) to calculate them simultaneously. This needs to
+be configured for each program, with relevant options in `config` (e.g.,
+`NPARTS_GCTA`). Since each calculation is conducted on different nodes with
+unshared memory, the results are stored on the hard disk and need to be
+combined afterward, adding some overhead to the computation time.
 
 A `SLURM` user on KCL CREATE can only use a fixed number of CPUs (255) at one time.
 If `CPUS_OPENMP` is set to 15 and the calculation is split into 10 parts, 150
