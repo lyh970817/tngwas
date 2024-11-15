@@ -39,6 +39,9 @@ directory:
 
 To clear the file content in `LOG` and `OUT` before running the pipeline, use the `--fresh` flag.
 
+It is recommended to create different `config` files for analyses that need to be separated, and
+to make symbolic links for large genetic data files.
+
 ## Tips for Using Parallelization on `SLURM`
 
 There are two types of parallelization enabled by `SLURM`.
